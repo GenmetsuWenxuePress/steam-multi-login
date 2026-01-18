@@ -61,8 +61,21 @@
 
 1.  Visit **Firefox Add-ons Store**: [Download Link](https://addons.mozilla.org/zh-CN/firefox/addon/%E7%BD%91%E9%A1%B5steam%E5%8F%8C%E5%BC%80/) 
 2.  Click "Add to Firefox".
+3.  Click the extension icon in the toolbar to start adding your first account container.
 
-### 📜 License
+### 🛠️ Development & Build
 
-This project is licensed under the **Mozilla Public License 2.0**.
-See the [LICENSE](LICENSE) file for details.
+If you want to review the code or build it yourself:
+
+1.  Clone this repository:
+    ```bash
+    git clone [https://github.com/GenmetsuWenxuePress/steam-multi-login.git](https://github.com/GenmetsuWenxuePress/steam-multi-login.git)
+    ```
+2.  Open Firefox, type `about:debugging#/runtime/this-firefox` in the address bar, and press Enter.
+3.  Click "Load Temporary Add-on".
+4.  Select the `manifest.json` file inside the project directory.
+
+### 📄 Privacy & License
+
+* **Privacy Policy**: All data (account names, notes, settings) is stored strictly locally in your browser (`browser.storage.local`) and is **NEVER** uploaded to any external servers.
+* **License**: This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
