@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>Steam账户管理</title>
+  <style>
+    :root {
+      --bg-dark: #171a21;
+      --bg-card: #22252b; 
+      --bg-hover: #2a3038;
+      --text-main: #c7d5e0;
+      --highlight: #66c0f4;
+      --border: #3d4450;
+      --green: #4cff00;
+      --danger: #ff4d4f;
+    }
+
+    body {
+      width: 360px; 
+      min-height: 480px;
+      margin: 0;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      font-family: "Motiva Sans", "Microsoft YaHei", sans-serif;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    /* --- 通用 --- */
+    .hidden { display: none !important; }
+    button { cursor: pointer; border: none; font-family: inherit; }
+    input, textarea {
+      background: #0f1216; border: 1px solid #3a4b5d; color: white; 
+      padding: 8px; border-radius: 2px; width: 100%; box-sizing: border-box;
+    }
+    input:focus { border-color: var(--highlight); outline: none; }
+
+    /* --- 头部 --- */
+    header {
+      background: #171a21;
+      padding: 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #000;
+    }
+    .header-title { font-weight: bold; color: white; font-size: 16px; }
+    
+    .btn-lock-icon {
+      background: transparent;
+      color: #66c0f4;
+      font-size: 18px;
+      padding: 5px;
+      border-radius: 4px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .btn-lock-icon:hover { background: #3d4450; color: white; }
+
+    /* --- 设置面板 --- */
+    #settings-panel {
+      background: #1b2838;
+      padding: 15px;
+      border-bottom: 1px solid #000;
+    }
+    .lock-header {
+      display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;
+    }
+    .lock-title { font-size: 14px; color: #c7d5e0; }
+    .btn-modify-pass {
+      background: #3d4450; color: white; padding: 5px 12px; 
+      border-radius: 2px; font-size: 12px; transition: background 0.2s;
+    }
+    .btn-modify-pass:hover { background: #4b5460; }
+    .lock-status-row { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+    .status-indicator { 
+      display: inline-block; width: 14px; height: 14px; 
+      background: var(--green); border-radius: 2px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .status-indicator::after { content: '✓'; color: #1b2838; font-size: 11px; font-weight: bold; }
+    .status-text { color: #5c7e10; }
+    .btn-close-lock { color: var(--danger); text-decoration: none; cursor: pointer; }
+    .btn-close-lock:hover { text-decoration: underline; }
+
+    /* --- 账号列表 & 拖拽样式 --- */
+    #account-list { padding: 0; padding-bottom: 60px; }
+    
+    .account-item {
+      background: var(--bg-dark);
+      padding: 12px 15px;
+      display: flex;
+      align-items: center;
+      border-bottom: 1px solid #2a2d33;
+      cursor: grab;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .account-item:hover { background: var(--bg-card); }
+    .account-item:active { cursor: grabbing; }
+
+    .account-item.dragging {
+      opacity: 0.5;
+      background: #1b2838;
+      border: 1px dashed #66c0f4;
+    }
+    .account-item.drag-over {
+      border-top: 2px solid var(--highlight);
+    }
+
+    .avatar-box {
+      width: 42px; height: 42px;
+      background: #23262e;
+      border-radius: 4px;
+      display: flex; justify-content: center; align-items: center;
+      font-size: 20px; font-weight: bold;
+      margin-right: 15px;
+      flex-shrink: 0;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    }
+
+    .account-info { flex: 1; min-width: 0; }
+    .account-name { font-size: 15px; color: #e1e1e1; font-weight: bold; }
+    .item-meta { display: flex; gap: 4px; margin-top: 3px; flex-wrap: wrap; }
+    .tag-pill { background: rgba(102, 192, 244, 0.15); color: #66c0f4; padding: 1px 5px; border-radius: 2px; font-size: 10px; }
+    
+    .note-preview { 
+      color: #8a96a3; font-size: 11px; margin-top: 3px; 
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 95%;
+      font-style: italic; cursor: help;
+    }
+
+    .btn-edit {
+      background: none; color: #4f5860; font-size: 16px; padding: 5px;
+      opacity: 0.5; transition: all 0.2s; cursor: pointer;
+    }
+    .account-item:hover .btn-edit { opacity: 1; }
+    .btn-edit:hover { color: white; transform: scale(1.1); }
+
+    /* --- 底部栏 --- */
+    #add-bar {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #171a21; padding: 12px; border-top: 1px solid #000;
+      display: flex; gap: 8px; z-index: 10;
+    }
+    .btn-add { background: var(--highlight); color: #171a21; font-weight: bold; width: 70px; border-radius: 2px; }
+
+    /* --- 弹窗与遮罩 --- */
+    .overlay {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.85); z-index: 100;
+      display: flex; align-items: center; justify-content: center;
+    }
+    
+    .modal-content {
+      background: #1b2838; width: 85%; padding: 20px;
+      border: 1px solid #3d4450; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+    }
+    .modal-title { margin-top: 0; color: white; border-bottom: 1px solid #3d4450; padding-bottom: 10px; font-size: 16px; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 20px; }
+    .btn-save { background: var(--highlight); color: #171a21; padding: 6px 20px; font-weight: bold; border-radius: 2px;}
+    .btn-cancel { background: #3d4450; color: white; padding: 6px 15px; border-radius: 2px;}
+
+    /* --- 修改点：自定义悬浮提示 (Tooltip) 优化 --- */
+    #custom-tooltip {
+      position: fixed;
+      background: #1b2838;
+      border: 1px solid #66c0f4;
+      color: #c7d5e0;
+      padding: 8px 12px;
+      border-radius: 4px;
+      font-size: 12px;
+      z-index: 9999;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+      
+      /* 核心修改：限制大小并允许滚动 */
+      max-width: 250px;
+      max-height: 200px;       /* 限制最大高度 */
+      overflow-y: auto;        /* 内容过多时显示垂直滚动条 */
+      
+      /* 文本处理 */
+      word-wrap: break-word;   
+      white-space: pre-wrap;   /* 保留用户输入的换行符 */
+      
+      /* 交互关键 */
+      pointer-events: auto;    /* 允许鼠标进入进行滚动 */
+      
+      /* 滚动条美化 (Firefox) */
+      scrollbar-width: thin;
+      scrollbar-color: #66c0f4 #1b2838;
+    }
+
+    /* --- 锁屏 --- */
+    #lock-screen {
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: #171a21; z-index: 999;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+    }
+    .color-picker { display: flex; gap: 10px; margin-top: 5px; }
+    .color-option { width: 24px; height: 24px; border-radius: 50%; cursor: pointer; border: 2px solid transparent; }
+    .color-option.selected { border-color: white; transform: scale(1.1); box-shadow: 0 0 5px white; }
+  </style>
+</head>
+<body>
+
+  <div id="custom-tooltip" class="hidden"></div>
+
+  <div id="lock-screen" class="hidden">
+    <h2 style="color:var(--highlight);">🔒 安全锁定</h2>
+    <div style="display:flex; gap:5px; margin-top:10px;">
+      <input type="password" id="unlock-pass" placeholder="输入密码..." style="width:180px;">
+      <button id="btn-unlock" class="btn-add">解锁</button>
+    </div>
+    <div id="lock-msg" style="margin-top:10px; color:#ff4d4f; height:20px;"></div>
+  </div>
+
+  <header>
+    <div class="header-title">Steam账户管理</div>
+    <button id="btn-toggle-settings" class="btn-lock-icon" title="隐私锁">🔒</button>
+  </header>
+
+  <div id="settings-panel" class="hidden">
+    <div id="lock-ui-disabled" class="hidden">
+       <div class="lock-header">
+         <span class="lock-title">隐私锁 (PIN/密码)</span>
+         <button id="btn-enable-lock" class="btn-modify-pass" style="background:var(--highlight); color:#171a21; font-weight:bold;">开启保护</button>
+       </div>
+       <div style="font-size:12px; color:#666;">当前未启用密码保护。</div>
+    </div>
+    <div id="lock-ui-enabled" class="hidden">
+      <div class="lock-header">
+        <span class="lock-title">隐私锁 (PIN/密码)</span>
+        <button id="btn-modify-lock" class="btn-modify-pass">修改密码</button>
+      </div>
+      <div class="lock-status-row">
+        <span class="status-indicator"></span>
+        <span class="status-text">已启用保护</span>
+        <span id="btn-remove-lock" class="btn-close-lock">关闭</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="account-list"></div>
+
+  <div id="add-bar">
+    <input type="text" id="quick-add-name" placeholder="添加新账号...">
+    <button class="btn-add" id="btn-quick-add">添加</button>
+  </div>
+
+  <div id="edit-modal" class="overlay hidden">
+    <div class="modal-content">
+      <h3 class="modal-title">编辑账号</h3>
+      <input type="hidden" id="edit-id">
+      
+      <div style="margin-bottom:15px;">
+        <label style="display:block; color:#66c0f4; font-size:12px; margin-bottom:5px;">账号名称</label>
+        <input type="text" id="edit-name">
+      </div>
+      
+      <div style="margin-bottom:15px;">
+        <label style="display:block; color:#66c0f4; font-size:12px; margin-bottom:5px;">颜色标识</label>
+        <div class="color-picker" id="edit-colors"></div>
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="display:block; color:#66c0f4; font-size:12px; margin-bottom:5px;">标签 (逗号分隔)</label>
+        <input type="text" id="edit-tags" placeholder="国区, VIP...">
+      </div>
+
+      <div style="margin-bottom:15px;">
+        <label style="display:block; color:#66c0f4; font-size:12px; margin-bottom:5px;">备注</label>
+        <textarea id="edit-note" rows="3"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button id="btn-delete-account" style="margin-right:auto; background:none; color:#ff4d4f;">🗑 删除</button>
+        <button class="btn-cancel" id="btn-modal-cancel">取消</button>
+        <button class="btn-save" id="btn-modal-save">保存</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="custom-prompt" class="overlay hidden">
+    <div class="modal-content" style="width: 70%;">
+      <h3 class="modal-title" id="prompt-title">提示</h3>
+      <input type="password" id="prompt-input" placeholder="请输入...">
+      <div class="modal-actions">
+        <button class="btn-cancel" id="btn-prompt-cancel">取消</button>
+        <button class="btn-save" id="btn-prompt-confirm">确定</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
