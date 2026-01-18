@@ -41,8 +41,6 @@
 * **隐私承诺**：所有数据（账号名、备注、设置）仅存储在您的本地浏览器 (`browser.storage.local`)，不上传至任何服务器。
 * **许可证**：本项目基于 **Mozilla Public License 2.0** 开源。详情请参阅 [LICENSE](LICENSE) 文件。
 
----
-
 ## 🤝 开发声明 (Development Statement)
 
 本项目是人机协作的成果：**我**负责整体的想法与功能设计，**Google Gemini 3.0 Pro** 负责具体的代码生成。
@@ -86,8 +84,6 @@ If you want to review the code or build it yourself:
 
 * **Privacy Policy**: All data (account names, notes, settings) is stored strictly locally in your browser (`browser.storage.local`) and is **NEVER** uploaded to any external servers.
 * **License**: This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
-
----
 
 ## 🤝 开发声明 (Development Statement)
 
