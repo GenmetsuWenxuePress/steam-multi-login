@@ -1,4 +1,4 @@
-# 网页Steam双开 (Steam Multi-Login Manager)
+# 网页Steam双开 (Steam Multi Login Manager)
 
 [English](#english) | [中文](#中文)
 
