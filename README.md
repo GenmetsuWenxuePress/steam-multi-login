@@ -43,6 +43,13 @@
 
 ---
 
+## 🤝 开发声明 (Development Statement)
+
+本项目是人机协作的成果：**我**负责整体的想法与功能设计，**Google Gemini 3.0 Pro** 负责具体的代码生成。
+This project is a result of human-AI collaboration: **I** was responsible for the overall idea and feature design, while **Google Gemini 3.0 Pro** handled the specific code generation.
+
+---
+
 <a name="english"></a>
 ## 🇺🇸 English Description
 
@@ -79,3 +86,10 @@ If you want to review the code or build it yourself:
 
 * **Privacy Policy**: All data (account names, notes, settings) is stored strictly locally in your browser (`browser.storage.local`) and is **NEVER** uploaded to any external servers.
 * **License**: This project is licensed under the **Mozilla Public License 2.0**. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🤝 开发声明 (Development Statement)
+
+本项目是人机协作的成果：**我**负责整体的想法与功能设计，**Google Gemini 3.0 Pro** 负责具体的代码生成。
+This project is a result of human-AI collaboration: **I** was responsible for the overall idea and feature design, while **Google Gemini 3.0 Pro** handled the specific code generation.
